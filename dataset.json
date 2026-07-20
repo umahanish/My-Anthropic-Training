@@ -1,14 +1,14 @@
 [
   {
-    "task": "Parse an AWS S3 bucket name from an S3 URI string (e.g., 's3://my-bucket/path/to/file.txt')",
+    "task": "Extract all S3 bucket names from AWS CloudFormation template YAML content",
     "format": "regex"
   },
   {
-    "task": "Create a JSON CloudFormation template snippet that defines an IAM role with a trust policy allowing EC2 instances to assume it",
-    "format": "json"
+    "task": "Create a Python function that takes an AWS IAM policy document and returns all allowed actions",
+    "format": "python"
   },
   {
-    "task": "Write a Python function that takes an AWS region code and returns the corresponding region name (e.g., 'us-east-1' \u2192 'N. Virginia')",
-    "format": "python"
+    "task": "Generate a JSON configuration object for an AWS Lambda function with basic settings (function name, runtime, handler, timeout, memory)",
+    "format": "json"
   }
 ]

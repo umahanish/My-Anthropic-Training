@@ -1,11 +1,11 @@
 [
   {
-    "task": "Write a Python function that validates an AWS S3 bucket name according to AWS naming rules (3-63 characters, lowercase letters, numbers, and hyphens only, must start and end with letter or number)"
+    "task": "Write a regex pattern to validate an AWS S3 bucket name. S3 bucket names must be between 3 and 63 characters long, contain only lowercase letters, numbers, hyphens, and dots, start and end with a letter or number, and not be formatted as an IP address."
   },
   {
-    "task": "Create a JSON CloudFormation template snippet that defines an AWS IAM role with a trust policy allowing EC2 instances to assume it"
+    "task": "Write a Python function that takes an AWS IAM policy JSON as a string and returns a list of all AWS service actions (e.g., 's3:GetObject', 'dynamodb:Query') mentioned in the policy."
   },
   {
-    "task": "Write a regular expression to extract the AWS account ID and region from an ARN string in the format 'arn:aws:service:region:account-id:resource'"
+    "task": "Create a JSON object representing an AWS Lambda environment variables configuration that includes database connection details (host, port, username) and feature flags (debug_mode, enable_logging), with appropriate data types."
   }
 ]
