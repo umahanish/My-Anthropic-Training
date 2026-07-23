@@ -1,0 +1,14 @@
+[
+  {
+    "task": "Parse an AWS S3 bucket name and object key from an S3 URI like 's3://my-bucket/path/to/file.txt'",
+    "format": "regex"
+  },
+  {
+    "task": "Create a JSON CloudFormation template snippet for an AWS Lambda function with basic execution role",
+    "format": "json"
+  },
+  {
+    "task": "Write a Python function that validates if an AWS IAM username follows the naming convention (alphanumeric, hyphens, underscores, 1-64 characters)",
+    "format": "python"
+  }
+]

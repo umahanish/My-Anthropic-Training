@@ -1,14 +1,14 @@
 [
   {
-    "task": "Extract all S3 bucket names from AWS CloudFormation template YAML content",
+    "task": "Extract the AWS region from an S3 bucket ARN like 'arn:aws:s3:::my-bucket-us-east-1'",
     "format": "regex"
   },
   {
-    "task": "Create a Python function that takes an AWS IAM policy document and returns all allowed actions",
+    "task": "Create a Python function that takes an EC2 instance ID and returns a formatted CloudWatch Logs query string for that instance",
     "format": "python"
   },
   {
-    "task": "Generate a JSON configuration object for an AWS Lambda function with basic settings (function name, runtime, handler, timeout, memory)",
+    "task": "Generate a JSON IAM policy document that allows read-only access to a specific S3 bucket",
     "format": "json"
   }
 ]

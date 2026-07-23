@@ -1,0 +1,17 @@
+[
+  {
+    "task": "Parse an AWS CloudWatch Logs Insights query result and extract all unique log levels (ERROR, WARN, INFO, DEBUG) from the logs",
+    "format": "regex",
+    "solution_criteria": "The regex should correctly identify and match log level patterns commonly found in AWS CloudWatch logs, handling variations like lowercase and uppercase, and should not produce false positives"
+  },
+  {
+    "task": "Create a Python function that validates an AWS S3 bucket name according to AWS naming rules (3-63 characters, lowercase, no underscores, starts with letter or number)",
+    "format": "python",
+    "solution_criteria": "The function should return True for valid bucket names and False for invalid ones, correctly enforcing all S3 naming constraints"
+  },
+  {
+    "task": "Generate a JSON configuration object for an AWS Lambda function that includes environment variables, VPC settings, and memory allocation with reasonable defaults",
+    "format": "json",
+    "solution_criteria": "The JSON should be valid, include all necessary AWS Lambda configuration fields, have realistic values, and be properly formatted for AWS API consumption"
+  }
+]
