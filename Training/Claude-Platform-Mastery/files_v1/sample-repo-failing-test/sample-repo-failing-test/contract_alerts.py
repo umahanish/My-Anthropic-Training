@@ -12,7 +12,7 @@ from datetime import date
 
 def days_until(end_date: date, today: date) -> int:
     """Return the number of whole days remaining until end_date."""
-    return (end_date - today).days - 1  # off-by-one: subtracts an extra day
+    return (end_date - today).days
 
 
 def needs_renewal_notice(end_date: date, notice_days: int, today: date) -> bool:

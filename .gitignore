@@ -20,6 +20,13 @@ ENV/
 # VS Code
 .vscode/
 
+# Node
+node_modules/
+
+# Office temp/lock files
+~$*
+*.tmp
+
 # Distribution / packaging
 build/
 dist/
