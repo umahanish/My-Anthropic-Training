@@ -76,9 +76,16 @@ This is your copy — basic theory plus labs, building directly on Module 3. Sam
            max_tokens=300,
            messages=messages,
        )
-       reply = next(b.text for b in response.content if b.type == "text")
-       messages.append({"role": "assistant", "content": reply})
-       print(f"Claude: {reply}\n")
+
+       text_blocks = [b.text for b in response.content if getattr(b, "type", None) == "text"]
+
+       if not text_blocks:
+        block_types = [getattr(b, "type", None) for b in response.content]
+        raise ValueError(f"No text blocks returned from Anthropic. Response blocks: {block_types}")
+
+        reply = "".join(text_blocks)
+        messages.append({"role": "assistant", "content": reply})
+        print(f"Claude: {reply}\n")
 
    ask("My name is Priya and I work on the Nimbus migration project. Remember that.")
    ask("What's my name and what project am I working on?")
