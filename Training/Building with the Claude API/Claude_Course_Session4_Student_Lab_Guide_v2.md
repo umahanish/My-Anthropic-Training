@@ -27,15 +27,22 @@ This is your copy — basic theory plus labs, building directly on Module 3. Sam
 ### 🔵 Lab 1.2 (Stretch) — The Same Call, Raw curl *(10 min)*
 1. In a terminal, run (swap in your real key or export it first):
    ```bash
-   curl https://api.anthropic.com/v1/messages \
-     -H "content-type: application/json" \
-     -H "x-api-key: $ANTHROPIC_API_KEY" \
-     -H "anthropic-version: 2023-06-01" \
-     -d '{
-       "model": "claude-sonnet-5",
-       "max_tokens": 300,
-       "messages": [{"role": "user", "content": "What should I check first when a vendor contract is about to auto-renew?"}]
-     }'
+    export $(grep -E '^ANTHROPIC_API_KEY=' .env | xargs)
+
+    curl https://api.anthropic.com/v1/messages \
+    -H "content-type: application/json" \
+    -H "x-api-key: $ANTHROPIC_API_KEY" \
+    -H "anthropic-version: 2023-06-01" \
+    -d '{
+        "model": "claude-sonnet-5",
+        "max_tokens": 300,
+        "messages": [
+        {
+            "role": "user",
+            "content": "What should I check first when a vendor contract is about to auto-renew?"
+        }
+        ]
+    }'
    ```
 2. Compare the raw JSON response to what the Workbench showed you — same shape, no SDK in between.
 
