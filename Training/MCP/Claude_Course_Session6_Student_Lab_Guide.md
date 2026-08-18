@@ -4,7 +4,7 @@
 New setup for this module — different packages, same contract scenario.
 
 ```bash
-pip install fastmcp mcp
+%pip install "fastmcp-slim[server]"
 ```
 
 **Two different "FastMCP"s exist — worth knowing before you start:** `fastmcp` (what we install above) is a popular, actively developed standalone package. The base `mcp` SDK also ships its own smaller `mcp.server.fastmcp` module with a similar name. This module uses the standalone `fastmcp` package throughout, since it's what most real-world MCP servers are actually built with today.
