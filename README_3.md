@@ -16,7 +16,7 @@ Every layer below feeds this loop: agents are instrumented at the orchestration 
 
 ## Enterprise AI Framework
 
-![Enterprise AI Framework](./assets/enterprise-ai-architecture.png)
+![Enterprise AI Framework](.enterprise-ai-architecture.png)
 
 This platform sits inside a broader **Enterprise AI** operating framework. Three pillars — **Strategy**, **Architecture**, **Governance** — feed the Enterprise AI Platform; three more — **Data**, **Security**, **Engineering** — surround it in production; and everything is run through **Operations** (Observe / Control / Optimize). The sections above map directly onto the Architecture, Data, Security, and Operations columns of this framework. The sections below map onto Strategy and Governance — the parts that don't show up in code but determine whether the platform is allowed to go live.
 
