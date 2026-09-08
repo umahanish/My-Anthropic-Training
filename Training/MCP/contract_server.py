@@ -58,4 +58,4 @@ async def summarize_contract_risk(vendor_name: str, ctx: Context) -> str:
 
 
 if __name__ == "__main__":
-    mcp.run()
+    mcp.run(transport="streamable-http")
