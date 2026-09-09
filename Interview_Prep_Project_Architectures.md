@@ -39,6 +39,32 @@ I've now added an **"☁ Infra Stack"** line to every project below — this is 
 **Context:** Employees needed self-service answers on HR policy, payroll, and benefits without raising tickets.
 
 **Architecture:**
+
+**A. Ingestion pipeline (offline/batch — runs whenever HR publishes or updates a policy):**
+```
+Source docs (HR policy PDFs, payroll handbooks, benefits guides
+   — pulled from SharePoint / HR document system)
+        │
+        ▼
+   Document loader — extracts text, preserves headings/section structure
+        │
+        ▼
+   Chunking — recursive/semantic chunking (~500–800 tokens, with overlap
+   so a policy clause isn't split mid-sentence across chunks)
+        │
+        ▼
+   Metadata tagging — department, policy version, effective date, region
+   (this is what lets retrieval later filter to "current version only")
+        │
+        ▼
+   Embedding model — converts each chunk to a vector
+        │
+        ▼
+   Vector store upsert — new chunks added; superseded-version chunks are
+   flagged inactive (not deleted, for audit trail) rather than overwritten
+```
+
+**B. Runtime query flow (what happens when an employee actually asks something):**
 ```
 Employee query (Teams/Web widget)
         │
@@ -49,11 +75,14 @@ Employee query (Teams/Web widget)
         │
         ▼
    Retrieval layer
-        ├── Vector store (embeddings of HR policy docs, payroll handbooks)
-        ├── Chunking + metadata filters (department, policy version, region)
+        ├── Query embedded with the same embedding model used at ingestion
+        ├── Similarity search against the vector store (top-k chunks)
+        ├── Metadata filter applied (department, current policy version, region)
+        ├── (optional) re-ranking step to push the most relevant chunks to the top
         │
         ▼
-   Claude (generation) — grounded answer + citation of source policy doc
+   Claude (generation) — grounded answer, built only from the retrieved
+   chunks, with citation back to the specific source policy doc/section
         │
         ▼
    Guardrails: Azure AI Content Safety filter on input/output
@@ -61,6 +90,8 @@ Employee query (Teams/Web widget)
         ▼
    Response + confidence score → escalate to HR ticket if low confidence
 ```
+
+**Why the ingestion/runtime split matters in interview:** most candidates only describe the runtime flow (B) — being able to walk through how the knowledge base actually gets built and kept current (A) is what separates "I called an API" from "I architected the data pipeline."
 
 **Key components to be ready to name:**
 - Document ingestion pipeline (policy PDFs/HTML → chunked → embedded)
@@ -97,18 +128,36 @@ Employee query (Teams/Web widget)
 **Context:** Premium customers need real-time answers on tier status, mileage redemption, and upgrade eligibility — this requires live lookups into membership/mileage systems, not just static knowledge.
 
 **Architecture:**
+
+**A. Ingestion pipeline (for the static side — tier/benefits rules, redemption policy docs):**
+```
+Source docs (tier benefit tables, redemption policy, upgrade eligibility
+   rules — these change far less often than a mileage balance does)
+        │
+        ▼
+   Chunking + embedding (same pattern as AskHR) → vector store
+        │
+        ▼
+   Used only for "what are the rules" questions — never for balances,
+   since balances must come from a live system call, not stored text
+```
+*This is the key distinction to make in interview: not everything here is RAG. Static policy text is ingested and retrieved like AskHR; account-specific data (balance, eligibility) is never ingested — it's fetched live, every time, via MCP tool calls, because ingesting and caching it would risk giving a customer stale or wrong numbers.*
+
+**B. Runtime query flow:**
 ```
 Customer query
      │
      ▼
 Supervisor agent (LangGraph state machine)
      │
-     ├──► Tier/Benefits agent ──► MCP tool call ──► Membership system API
+     ├──► Tier/Benefits agent ──► [static rules: retrieve from vector store]
+     │                             [live status: MCP tool call ──► Membership system API]
      ├──► Redemption agent    ──► MCP tool call ──► Mileage/Loyalty ledger API
      ├──► Upgrade eligibility agent ──► MCP tool call ──► Booking/Inventory system
      │
      ▼
-Aggregator node — merges sub-agent outputs into one coherent answer
+Aggregator node — merges sub-agent outputs (retrieved policy text +
+live account data) into one coherent, grounded answer
      │
      ▼
 Response to customer (with real-time balance/eligibility, not stale data)
@@ -142,13 +191,26 @@ Response to customer (with real-time balance/eligibility, not stale data)
 
 **Context:** Manual verification steps in self-service check-in were slowing passengers down.
 
-**Architecture:** Agentic process orchestration using explicit state machines (not a conversational agent — a workflow automation problem):
+**Architecture:** Agentic process orchestration using explicit state machines (not a conversational agent — a workflow automation problem). Note this project has no batch document ingestion pipeline like AskHR — the only "ingestion" is real-time capture of the passenger's own document at the moment of check-in:
+
 ```
-Check-in request → State: Identity Verify → State: Document Check
-   → State: Seat/Bag Rules Validation → State: Boarding Pass Issue
+Passenger presents document (passport/boarding doc scan or photo)
+        │
+        ▼
+   Real-time capture — image captured via kiosk/app camera, no storage
+   into a knowledge base (this is a one-time validation input, not
+   reusable knowledge, so it's discarded/archived per data-retention
+   policy after the check-in flow completes — not indexed anywhere)
+        │
+        ▼
+State: Identity Verify → State: Document Check (LLM judgment step reads
+   the captured image here) → State: Seat/Bag Rules Validation
+   → State: Boarding Pass Issue
 (each state = a deterministic step, with an LLM step only where
  unstructured judgment is needed, e.g., document image validation)
 ```
+
+**Worth stating explicitly if asked "where's the RAG/knowledge base here":** there isn't one — this is intentionally the project in your portfolio that is *not* RAG, precisely because the input is a one-time document capture, not a corpus to retrieve from. Interviewers sometimes ask this specifically to check you're not pattern-matching "GenAI project = RAG project" reflexively.
 
 **Key point to make in interview:** this is where you draw the line between "use an LLM agent" and "use a plain state machine" — most of Fastpass is deterministic business rules; the LLM/agent is only in the narrow slice needing judgment (e.g., interpreting a passport photo edge case). Interviewers like architects who *don't* over-apply GenAI everywhere.
 
@@ -177,6 +239,29 @@ Check-in request → State: Identity Verify → State: Document Check
 - **Observability:** LangSmith traces every agent step/tool call; Ragas scores RAG outputs (faithfulness, answer relevancy, context recall) on a held-out eval set, run in CI before deploying prompt/retrieval changes.
 - **Safety:** Azure AI Content Safety on the Azure-hosted flows, Vertex AI Safety Filters where GCP components are used — layered, not single point of failure.
 - **Domain customization:** Azure AI Foundry / Vertex AI custom models fine-tuned or prompt-tuned specifically for cargo manifest and HR document extraction accuracy (structured extraction is a different problem than conversational RAG — worth distinguishing in interview).
+
+**Ingestion & extraction flow for cargo manifests (this is extraction, not RAG — no vector store involved):**
+```
+Cargo manifest documents (scanned/PDF, semi-structured — varying
+   layouts per airline partner/route)
+        │
+        ▼
+   Document pre-processing — OCR where needed, layout detection
+   (tables, line items, consignor/consignee fields)
+        │
+        ▼
+   Vertex AI Custom Model (tuned specifically on cargo manifest formats)
+   — extracts structured fields (weight, contents, routing, HS codes)
+        │
+        ▼
+   Validation layer — extracted fields checked against expected schema/
+   business rules (e.g., weight within plausible range) before being
+   written to downstream cargo systems
+        │
+        ▼
+   Low-confidence extractions flagged for manual review, not auto-accepted
+```
+*Why this isn't RAG:* there's nothing to "retrieve" — each manifest is processed independently for its own structured data, not matched against a knowledge base. This is a good distinction to draw if an interviewer conflates "GenAI project" with "RAG project."
 
 **☁ Infra Stack (this is the "secondary" Qatar Airways stack):** the cargo manifest/HR document extraction service is the one piece that runs on GCP rather than Azure — Azure API Management still fronts the overall request (single entry point for consumers), but the extraction workload itself calls GCP Vertex AI Custom Models, packaged and deployed as containerized services on **Cloud Run** (for the lighter, on-demand extraction calls) and **GKE** (for the more persistent/batch processing pieces), still shipped through Azure DevOps pipelines. *If asked why GCP just for this piece:* Vertex AI's custom model tuning for document/structured extraction was the stronger fit for cargo manifest formats specifically — this is a genuine "best tool for the job" call, not an accident of two teams doing their own thing, and it's worth saying so plainly.
 
@@ -216,20 +301,52 @@ Check-in request → State: Identity Verify → State: Document Check
 **Context:** Research teams needed faster literature review and regulatory submission prep, over internal clinical/research corpora — a regulated, high-precision domain (wrong answers have real consequences).
 
 **Architecture:**
+
+**A. Ingestion pipeline (offline — clinical/research corpus is processed as it's added or updated):**
 ```
-Internal corpora (clinical trial docs, regulatory filings, literature)
+Internal corpora (clinical trial docs, regulatory filings, scientific
+   literature — often complex PDFs with tables, figures, footnotes)
         │
         ▼
-  Ingestion + chunking (domain-aware: preserve section/table structure)
+   Domain-aware document parsing — preserves table structure and
+   section hierarchy (a plain text-splitter would break tables apart
+   and lose the exact data GxP answers depend on)
         │
         ▼
-  Embeddings → Vector store (likely OpenSearch/Bedrock KB or similar, given AWS context)
+   Chunking — section/table-aware chunks, each tagged with source
+   document ID, version, and page/section reference
         │
         ▼
-  Retrieval + Claude/Bedrock model generation
+   Embedding → vector store (e.g., OpenSearch or Bedrock Knowledge
+   Bases), each chunk retrievable back to its exact source location
         │
         ▼
-  Citation-grounded output (mandatory — no answer without traceable source, for GxP audit trail)
+   Version control — when a regulatory filing is amended, the old
+   version's chunks are retained (not deleted) with a superseded flag,
+   since GxP audit may need to reference what was known at a past date
+```
+
+**B. Runtime query flow:**
+```
+Researcher query
+        │
+        ▼
+   Retrieval — query embedded, top-k chunks retrieved from the vector
+   store, filtered to current/active document versions by default
+   (with an option to search prior versions for audit purposes)
+        │
+        ▼
+   Claude/Bedrock model generation — answer built only from retrieved
+   chunks
+        │
+        ▼
+   Citation-grounding check — every claim in the generated answer is
+   verified against a matching retrieved chunk; unmatched claims are
+   stripped or the answer is flagged for human review (see guardrails)
+        │
+        ▼
+   Response returned with inline citations back to source doc + section,
+   satisfying the GxP audit-trail requirement
 ```
 
 **Key distinguishing point vs. AskHR:** GxP compliance means every answer needs an audit trail back to the source document and version — this is a much stricter grounding requirement than an HR chatbot. Be ready to explain how you enforced "no ungrounded claims."
@@ -283,18 +400,36 @@ Same prep as the AKS lab above (§1.5), but be ready to name the EKS-specific di
 **Context:** Deflect toll-free customer service call volume; must integrate with legacy IVR and core banking systems — heavily regulated, high-availability, audit-sensitive environment.
 
 **Architecture:**
+
+**A. Ingestion pipeline (for the FAQ/policy knowledge base side):**
+```
+Source content (banking FAQ articles, product policy docs, terms &
+   conditions — content team-maintained, updated on a regular cadence)
+        │
+        ▼
+   Chunking + embedding (same core pattern as AskHR) → vector store
+        │
+        ▼
+   Content review gate — given the regulated context, any new/updated
+   FAQ content goes through a compliance review before being ingested,
+   not just a content-team publish
+```
+
+**B. Runtime query flow:**
 ```
 Customer channel (IVR / web / app)
         │
         ▼
    NLU/Intent layer ──► routes: balance inquiry / dispute / general query
         │
-        ├──► Core banking system integration (read-only balance/transaction lookups)
-        ├──► Knowledge base (FAQ/policy RAG)
+        ├──► Core banking system integration (read-only balance/
+        │    transaction lookups — live call, never cached/ingested,
+        │    same principle as the Loyalty bot's live-data rule)
+        ├──► Knowledge base (FAQ/policy RAG — retrieval as above)
         │
         ▼
-   Response generation (with strict guardrails — no financial advice generation,
-   no unauthorized account actions from the bot)
+   Response generation (with strict guardrails — no financial advice
+   generation, no unauthorized account actions from the bot)
         │
         ▼
    Escalation to human agent if confidence low or transaction-type request
