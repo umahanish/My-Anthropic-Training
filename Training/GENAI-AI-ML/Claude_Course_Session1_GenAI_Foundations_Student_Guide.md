@@ -638,6 +638,16 @@ flowchart TD
     Q3 -- No --> M[Try a more capable model]
 ```
 
+# Prompt Engineering vs RAG vs Fine-Tuning
+
+| Feature | Prompt Engineering | Retrieval-Augmented Generation (RAG) | Fine-Tuning |
+| --- | --- | --- | --- |
+| **Primary Goal** | Guide the output through clear phrasing and format constraints. | Inject factual, real-time data dynamically at inference time. | Deeply specialize model behavior, tone, and vocabulary. |
+| **Knowledge Base** | Internalized pre-training data only. | Connected to an external vector database or files. | Hardcoded directly into the model's neural weights. |
+| **Implementation Cost** | Negligible; instantly deployed with zero infrastructure. | Medium; requires database maintenance and retrieval logic. | High; requires labeled datasets, GPUs, and retraining. |
+| **Best For...** | Formatting, quick prototyping, and zero-shot style control. | Dynamic data, internal docs, and avoiding hallucinations. | Medical coding, structured JSON output, and niche syntax. |
+
+
 Start at the top. Most teams never need to go to the bottom.
 
 📌 THE DECISION FRAMEWORK
