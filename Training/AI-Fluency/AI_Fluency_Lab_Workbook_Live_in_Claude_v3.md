@@ -33,6 +33,7 @@ For each of the 4 Ds, tell me:
 3. One specific thing I could have done differently
 
 Be direct and specific. Don't just validate me — I can handle honest feedback.
+
 ```
 
 *(If you have your own recent interaction, swap the middle paragraph for your real prompt-and-response — the audit is more useful on your own material once you've seen how it works.)*
@@ -64,11 +65,22 @@ Show me how to configure connection pooling in SQLAlchemy 2.0, including
 the exact parameter names and their default values.
 ```
 
+Once you got a response from Claude, then type below to see the hallucination response
+
+```
+is it any hallucination in the previous information which you shared ?
+```
+
 **Option B — more obscure corner, higher chance of a shaky answer:**
 ```
 What are all the configuration options in the behavior.scaleDown section
 of a Kubernetes HorizontalPodAutoscaler (autoscaling/v2)? List every field
 with its default value.
+```
+Once you got a response from Claude, then type below to see the hallucination response
+
+```
+is it any hallucination in the previous information which you shared ?
 ```
 
 **Step 2.** Do not take the answer at face value. Open the real source: the official docs, the GitHub source, or `--help` output for that exact library and version. Check every specific claim — parameter names, defaults, behavior.

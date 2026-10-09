@@ -92,6 +92,65 @@ For each, write one sentence: which limit from the list above did you just obser
 
 ---
 
+Students often hear these terms used as if they mean the same thing. They are nested.
+
+```mermaid
+flowchart TD
+    AI["Artificial Intelligence<br/>any system doing tasks that need human-like judgment"]
+    ML["Machine Learning<br/>learns patterns from data instead of hand-written rules"]
+    DL["Deep Learning<br/>ML using many-layered neural networks"]
+    GEN["Generative AI<br/>models that create text, images, code, audio"]
+    LLM["LLMs<br/>generative models for language (Claude)"]
+    AI --> ML --> DL --> GEN --> LLM
+```
+
+**The three classic ML learning styles**
+
+| Style | Learns from | Example in IT |
+| --- | --- | --- |
+| Supervised | Labeled examples (input + correct answer) | Spam filter, ticket category prediction, fraud score |
+| Unsupervised | Unlabeled data, finds structure | Grouping similar incidents, anomaly detection |
+| Reinforcement | Rewards and penalties from actions | Game-playing agents; also used in LLM post-training (feedback on responses) |
+
+**The ML lifecycle (the same loop applies to GenAI systems, with different tools)**
+
+```mermaid
+flowchart LR
+    A[Define problem] --> B[Collect and clean data]
+    B --> C[Train model]
+    C --> D[Evaluate on unseen data]
+    D --> E[Deploy]
+    E --> F[Monitor for drift]
+    F --> B
+```
+
+**Vocabulary every student should know**
+
+| Term | Plain meaning |
+| --- | --- |
+| Training data / test data | Data used to learn vs data held back to check the model honestly |
+| Overfitting | Model memorized the training data and fails on new data |
+| Model drift | Real-world data changes over time and accuracy quietly drops |
+| Precision / recall | Of the alerts raised, how many were real / of the real problems, how many were caught |
+| Neural network | Layers of simple math units whose weights are adjusted during training |
+| Transformer | The neural network design behind modern LLMs; its **attention** mechanism lets each token weigh which other tokens matter for its meaning |
+
+**Why this matters:** an LLM is not always the right tool. Predicting server disk failure from numeric metrics is usually a job for classic ML. Explaining the alert in plain language is a job for an LLM.
+
+### 🟢 Lab 2A.1 — Right tool for the job *(8 min)*
+
+Decide for each task: **rules, classic ML, or LLM** (or a combination), and write one reason.
+
+1. Block logins from countries your company does not operate in
+2. Predict which servers will run out of disk in 7 days
+3. Summarize a 40-page vendor contract
+4. Route incoming tickets to the right team
+5. Draft a customer-friendly explanation of an outage
+
+Then ask Claude: *"For each of these 5 tasks, would you use rules, classic ML, an LLM, or a combination? Challenge any of my answers you disagree with."* Where did Claude disagree, and was it right?
+
+---
+
 ## Part 2 — How is an LLM trained?
 
 ```mermaid
