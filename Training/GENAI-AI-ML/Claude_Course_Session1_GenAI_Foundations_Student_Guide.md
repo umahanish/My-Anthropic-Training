@@ -437,7 +437,8 @@ Run it: `python toy_vector_db.py`.
 **A normal chatbot** answers from what the model learned in training plus the current conversation. It does not know your private documents, and it may not know anything after its cutoff.
 
 **RAG (Retrieval-Augmented Generation)** adds a step before the model answers: **Retrieve** relevant chunks from your own data, **Augment** the prompt by inserting them, then **Generate** an answer grounded in them. 
-(images/rag_architecture.png)
+
+![The RAG pipeline: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/rag_architecture.png)
 ```mermaid
 flowchart LR
     Q[Question] --> R[Retrieve<br/>search vector DB<br/>+ keyword index]
