@@ -666,7 +666,7 @@ Q3: Does the task require decisions, actions, or multi-step reasoning?
 
 → Yes → Agent. You don't need a smarter answer. You need a worker.
 
-Enterprise Companies started to use Hybrid architecture:
+## Enterprise Companies started to use Hybrid architecture:
 ![The LLM vs RAG vs Finetunning Hybrid Architecture: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM+RAG-FineTunning-v1.png)
 
 ### 9.9 Evaluation, not vibes
