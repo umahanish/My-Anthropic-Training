@@ -20,7 +20,8 @@ No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (a
 | 6 | Vector databases | 25 min |
 | 7 | RAG vs a normal chatbot | 25 min |
 | 8 | How enterprises use GenAI and AI/ML in real time | 25 min |
-| 9 | Map to the rest of the course + knowledge check | 15 min |
+| 9 | Modern GenAI concepts you will hear everywhere | 30 min |
+| 10 | Map to the rest of the course + knowledge check | 15 min |
 
 ---
 
@@ -552,7 +553,7 @@ Share one answer with the room. You will revisit this map at the end of the cour
 
 ## Part 9 — Modern GenAI concepts you will hear everywhere *(30 min)*
 
-The first nine parts explain how an LLM answers a question. Real systems in 2026 go further: they reason, call tools, act in loops, and are tested continuously. This part gives you the vocabulary. Each idea is built out in later sessions.
+The first eight parts explain how an LLM answers a question. Real systems in 2026 go further: they reason, call tools, act in loops, and are tested continuously. This part gives you the vocabulary. Each idea is built out in later sessions.
 
 ### 9.1 Prompting → context engineering
 
