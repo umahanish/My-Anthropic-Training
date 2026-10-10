@@ -2,9 +2,11 @@
 
 ### "What is an LLM?" to "How do enterprises actually use this?"
 
-This is your copy. It sits between Session 1 (AI Fluency) and Session 2 (Claude Platform), and it gives you the vocabulary the rest of the course builds on. Every term you meet here (token, chunk, embedding, vector database, RAG) comes back later as something you will build or operate.
+![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM.jpeg)
 
 ![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/token-chunks-embed-vector-rag.jpg)
+
+This is your copy. It sits between Session 1 (AI Fluency) and Session 2 (Claude Platform), and it gives you the vocabulary the rest of the course builds on. Every term you meet here (token, chunk, embedding, vector database, RAG) comes back later as something you will build or operate.
 
 No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (and, for one, an Anthropic API key from Session 3).
 
