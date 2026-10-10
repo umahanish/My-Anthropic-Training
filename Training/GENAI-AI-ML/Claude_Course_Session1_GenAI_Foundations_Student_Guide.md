@@ -1,32 +1,26 @@
 # GenAI Foundations — Student Guide
 
-### "What is an LLM?" to "How do enterprises actually use this?"
+*The foundations: LLMs, AI/ML, GenAI, and the vocabulary the rest of the course builds on.*
 
+This guide explains what an LLM is, how it relates to AI and machine learning, and how it is trained. Every term you meet here (token, chunk, embedding, vector database, RAG) comes back later in the course as something you will build or operate.
 
+**Labs:** your trainer will tell you when to do each lab. 🟢 Core labs need only Claude.ai and no code. 🔵 Stretch labs use small Python scripts and may need an API key. Your trainer will tell you when and how to get set up.
 
-![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/token-chunks-embed-vector-rag.jpg)
-
-This is your copy. It sits between Session 1 (AI Fluency) and Session 2 (Claude Platform), and it gives you the vocabulary the rest of the course builds on. Every term you meet here (token, chunk, embedding, vector database, RAG) comes back later as something you will build or operate.
-
-No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (and, for one, an Anthropic API key from Session 3).
-
-**Legend:** 🟢 Core (everyone does this, no code) · 🔵 Stretch (small Python scripts)
-
-**Timing (about 3 hours):**
+**Timing (about 1.5 hours):**
 
 | Part | Topic | Time |
 | --- | --- | --- |
-| 1 | What is an LLM, and why is it useful? | 25 min |
-| 2 | Where LLMs fit: AI, ML, deep learning, GenAI | 25 min |
-| 3 | How is an LLM trained? | 25 min |
-| 4 | Tokenization | 20 min |
-| 5 | Chunking | 20 min |
-| 6 | Embeddings | 20 min |
-| 7 | Vector databases | 25 min |
-| 8 | RAG vs a normal chatbot | 25 min |
-| 9 | How enterprises use GenAI and AI/ML in real time | 25 min |
-| 10 | Modern GenAI concepts you will hear everywhere | 30 min |
-| 11 | Map to the rest of the course + knowledge check | 15 min |
+| 1 | What is an LLM, and why is it useful? | 5 min |
+| 2 | Where LLMs fit: AI, ML, deep learning, GenAI | 5 min |
+| 3 | How is an LLM trained? | 5 min |
+| 4 | Tokenization | 10 min |
+| 5 | Chunking | 10 min |
+| 6 | Embeddings | 10 min |
+| 7 | Vector databases | 10 min |
+| 8 | RAG vs a normal chatbot | 10 min |
+| 9 | How enterprises use GenAI and AI/ML in real time | 10 min |
+| 10 | Modern GenAI concepts you will hear everywhere | 10 min |
+| 11 | Map to the rest of the course + knowledge check | 5 min |
 
 ---
 
@@ -36,7 +30,7 @@ No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (a
 
 **Why it is useful to IT teams:** most IT work is text. Tickets, logs, runbooks, contracts, emails, code, and incident timelines are all text. An LLM can read and produce all of it, in plain language, without a custom model for every task.
 
-![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM.jpeg)
+![Diagram of an LLM predicting the next token from the text it is given](images/LLM.jpeg)
 
 | It is good at | Typical IT example |
 | --- | --- |
@@ -52,7 +46,7 @@ No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (a
 
 - **It can be confidently wrong.** It generates plausible text; it does not look facts up unless you give it a tool or documents. This is why Session 1 taught Discernment.
 - **It has a knowledge cutoff.** It only knows what was in its training data, up to a date.
-- **It has no memory between calls.** Each request starts fresh unless your application resends the history (you saw this in Session 4).
+- **It has no memory between calls.** Each request starts fresh unless your application resends the history (you will see this in Session 4).
 - **It has a context window.** There is a limit to how much text it can consider at once.
 - **Its output can vary.** The same prompt can produce slightly different answers.
 
@@ -103,7 +97,7 @@ For each, write one sentence: which limit from the list above did you just obser
 
 Students often hear these terms used as if they mean the same thing. They are nested.
 
-![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/AI-Subset.jpg)
+![Nested diagram: AI contains machine learning, which contains deep learning, generative AI and LLMs](images/AI-Subset.jpg)
 <details>
 ```mermaid
 flowchart TD
@@ -216,7 +210,7 @@ Answer in one sentence each, then compare with a partner: (a) If you correct Cla
 ## Part 4 — Tokenization
 
 Models do not read letters or words. They read **tokens**: pieces of text, often whole common words, parts of words, punctuation, or spaces. A **tokenizer** splits your text into tokens, and each token maps to a number the model can process.
-![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/tokens.jpg)
+![How a tokenizer splits text into tokens](images/tokens.jpg)
 
 ```
 "Reset the VPN password"  →  [ "Reset", " the", " VPN", " password" ]   (illustrative)
@@ -286,6 +280,8 @@ Run it: `python count_tokens.py`. Counts include a small fixed overhead for the 
 ## Part 5 — Chunking
 
 LLMs have a context window, and in RAG you do not want to send a whole library on every question. So documents are split into **chunks**: smaller pieces that are indexed and retrieved individually.
+
+![Overview of the RAG pipeline: documents are split into chunks, turned into embeddings, stored in a vector database, then retrieved to ground an answer](images/token-chunks-embed-vector-rag.jpg)
 
 **Why chunking choices matter:**
 
@@ -677,7 +673,7 @@ Q3: Does the task require decisions, actions, or multi-step reasoning?
 → Yes → Agent. You don't need a smarter answer. You need a worker.
 
 ## Enterprise Companies started to use Hybrid architecture:
-![The LLM vs RAG vs Finetunning Hybrid Architecture: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM+RAG-FineTunning-v1.png)
+![Hybrid architecture combining a fine-tuned LLM with RAG](images/LLM+RAG-FineTunning-v1.png)
 
 ### 10.9 Evaluation, not vibes
 
