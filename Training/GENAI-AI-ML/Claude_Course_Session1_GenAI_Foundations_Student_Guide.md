@@ -100,6 +100,8 @@ For each, write one sentence: which limit from the list above did you just obser
 
 Students often hear these terms used as if they mean the same thing. They are nested.
 
+![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/AI-Subset.jpg)
+
 ```mermaid
 flowchart TD
     AI["Artificial Intelligence<br/>any system doing tasks that need human-like judgment"]
