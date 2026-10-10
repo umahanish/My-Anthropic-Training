@@ -2,7 +2,7 @@
 
 ### "What is an LLM?" to "How do enterprises actually use this?"
 
-![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM.jpeg)
+
 
 ![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/token-chunks-embed-vector-rag.jpg)
 
@@ -17,15 +17,16 @@ No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (a
 | Part | Topic | Time |
 | --- | --- | --- |
 | 1 | What is an LLM, and why is it useful? | 25 min |
-| 2 | How is an LLM trained? | 25 min |
-| 3 | Tokenization | 20 min |
-| 4 | Chunking | 20 min |
-| 5 | Embeddings | 20 min |
-| 6 | Vector databases | 25 min |
-| 7 | RAG vs a normal chatbot | 25 min |
-| 8 | How enterprises use GenAI and AI/ML in real time | 25 min |
-| 9 | Modern GenAI concepts you will hear everywhere | 30 min |
-| 10 | Map to the rest of the course + knowledge check | 15 min |
+| 2 | Where LLMs fit: AI, ML, deep learning, GenAI | 25 min |
+| 3 | How is an LLM trained? | 25 min |
+| 4 | Tokenization | 20 min |
+| 5 | Chunking | 20 min |
+| 6 | Embeddings | 20 min |
+| 7 | Vector databases | 25 min |
+| 8 | RAG vs a normal chatbot | 25 min |
+| 9 | How enterprises use GenAI and AI/ML in real time | 25 min |
+| 10 | Modern GenAI concepts you will hear everywhere | 30 min |
+| 11 | Map to the rest of the course + knowledge check | 15 min |
 
 ---
 
@@ -34,6 +35,8 @@ No account beyond Claude.ai is needed for Core labs. Stretch labs need Python (a
 **A Large Language Model (LLM)** is a program trained on a very large amount of text so that, given some text, it can predict what text should come next. Everything you see Claude do (answer, summarize, write code, extract fields, follow instructions) is built on that one ability, applied to the text you give it.
 
 **Why it is useful to IT teams:** most IT work is text. Tickets, logs, runbooks, contracts, emails, code, and incident timelines are all text. An LLM can read and produce all of it, in plain language, without a custom model for every task.
+
+![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM.jpeg)
 
 | It is good at | Typical IT example |
 | --- | --- |
@@ -96,12 +99,12 @@ Remember my favourite colour is teal. (Then start a brand-new chat and ask:
 For each, write one sentence: which limit from the list above did you just observe?
 
 ---
-## Part 2A — Where LLMs fit: AI, ML, deep learning, GenAI *(15 min)*
+## Part 2 — Where LLMs fit: AI, ML, deep learning, GenAI *(15 min)*
 
 Students often hear these terms used as if they mean the same thing. They are nested.
 
 ![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/AI-Subset.jpg)
-
+<details>
 ```mermaid
 flowchart TD
     AI["Artificial Intelligence<br/>any system doing tasks that need human-like judgment"]
@@ -111,6 +114,7 @@ flowchart TD
     LLM["LLMs<br/>generative models for language (Claude)"]
     AI --> ML --> DL --> GEN --> LLM
 ```
+</details>
 
 **The three classic ML learning styles**
 
@@ -145,7 +149,7 @@ flowchart LR
 
 **Why this matters:** an LLM is not always the right tool. Predicting server disk failure from numeric metrics is usually a job for classic ML. Explaining the alert in plain language is a job for an LLM.
 
-### 🟢 Lab 2A.1 — Right tool for the job *(8 min)*
+### 🟢 Lab 2.1 — Right tool for the job *(8 min)*
 
 Decide for each task: **rules, classic ML, or LLM** (or a combination), and write one reason.
 
@@ -159,7 +163,7 @@ Then ask Claude: *"For each of these 5 tasks, would you use rules, classic ML, a
 
 ---
 
-## Part 2 — How is an LLM trained?
+## Part 3 — How is an LLM trained?
 
 ```mermaid
 flowchart LR
@@ -189,7 +193,7 @@ flowchart LR
 
 *Note: exact training data and recipes are not fully published for any commercial model, so treat this as the general, public picture.*
 
-### 🟢 Lab 2.1 — Explain it three ways *(10 min)*
+### 🟢 Lab 3.1 — Explain it three ways *(10 min)*
 
 ```
 Explain how an LLM is trained, three times:
@@ -203,15 +207,16 @@ detail it hides.
 
 **What to notice:** adjusting the audience is the "Description" skill from Session 1. Which version would you use to ask your manager for budget?
 
-### 🟢 Lab 2.2 — Training vs inference *(5 min)*
+### 🟢 Lab 3.2 — Training vs inference *(5 min)*
 
 Answer in one sentence each, then compare with a partner: (a) If you correct Claude in a chat, has the model been retrained? (b) Why can't Claude tell you today's exchange rate without a tool? (c) Why might a company choose RAG over training its own model?
 
 ---
 
-## Part 3 — Tokenization
+## Part 4 — Tokenization
 
 Models do not read letters or words. They read **tokens**: pieces of text, often whole common words, parts of words, punctuation, or spaces. A **tokenizer** splits your text into tokens, and each token maps to a number the model can process.
+![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/tokens.jpg)
 
 ```
 "Reset the VPN password"  →  [ "Reset", " the", " VPN", " password" ]   (illustrative)
@@ -227,7 +232,7 @@ Models do not read letters or words. They read **tokens**: pieces of text, often
 - **Speed.** More tokens means more latency.
 - **Odd failures.** Because the model sees tokens, not letters, tasks like "count the letters in this word" can go wrong.
 
-### 🟢 Lab 3.1 — Predict, then ask *(10 min)*
+### 🟢 Lab 4.1 — Predict, then ask *(10 min)*
 
 Guess the token count (just a rough number) for each string:
 
@@ -249,7 +254,7 @@ surprisingly expensive and why:
 
 **What to notice:** identifiers, dates, and codes usually cost more tokens than ordinary words. Claude's answer is an estimate, not an exact count; that is the point of the Stretch lab.
 
-### 🔵 Lab 3.2 (Stretch) — Count tokens exactly *(10 min)*
+### 🔵 Lab 4.2 (Stretch) — Count tokens exactly *(10 min)*
 
 Save as `count_tokens.py` (requires `pip install anthropic` and your `ANTHROPIC_API_KEY`):
 
@@ -278,9 +283,7 @@ for text in samples:
 Run it: `python count_tokens.py`. Counts include a small fixed overhead for the message wrapper, so compare strings to each other rather than to your gut guess. (If the SDK call signature differs in your installed version, check the current API docs.)
 
 ---
-![The tokens, chunks, embedding, vector database and rag: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/tokens.jpg)
-
-## Part 4 — Chunking
+## Part 5 — Chunking
 
 LLMs have a context window, and in RAG you do not want to send a whole library on every question. So documents are split into **chunks**: smaller pieces that are indexed and retrieved individually.
 
@@ -298,7 +301,7 @@ LLMs have a context window, and in RAG you do not want to send a whole library o
 | Overlapping | Each chunk repeats the end of the previous one | Avoiding lost context at boundaries |
 | Contextual | Prepend a short summary of where the chunk sits in the document | Chunks that are meaningless alone (you build this in Session 5) |
 
-### 🟢 Lab 4.1 — Chunk it three ways *(15 min)*
+### 🟢 Lab 5.1 — Chunk it three ways *(15 min)*
 
 Use this fictional policy text:
 
@@ -326,7 +329,7 @@ Now answer for each strategy: for the question *"How long do I have to report a 
 
 ---
 
-## Part 5 — Embeddings
+## Part 6 — Embeddings
 
 An **embedding** is a list of numbers (a **vector**) that represents the meaning of a piece of text. An embedding model is trained so that texts with similar meaning get vectors that are close together, even if they share no words.
 
@@ -347,7 +350,7 @@ flowchart LR
 
 **Why not just keyword search?** Keyword search matches exact words. "I forgot my login" and "reset my password" share no words, but a person (and an embedding) knows they are about the same thing. Keyword search is still better for exact identifiers like `NCS-2025-0142`, which is why Session 5 combines both.
 
-### 🟢 Lab 5.1 — Rank by meaning *(10 min)*
+### 🟢 Lab 6.1 — Rank by meaning *(10 min)*
 
 Query: **"How do I reset my password?"**
 
@@ -365,7 +368,7 @@ Then ask Claude to rank them and explain its ordering. Compare. Where did you di
 
 ---
 
-## Part 6 — Vector databases
+## Part 7 — Vector databases
 
 Once every chunk has an embedding, you need somewhere to put them and a fast way to search them. A **vector database** (or a vector index inside a regular database) stores, for each chunk:
 
@@ -396,7 +399,7 @@ flowchart TD
 
 **Enterprise concerns beyond similarity:** access control (a user should only retrieve chunks they are allowed to see), freshness (re-embed when documents change), and deletion (remove data when policy requires).
 
-### 🟢 Lab 6.1 — A vector database in 30 lines *(15 min)*
+### 🟢 Lab 7.1 — A vector database in 30 lines *(15 min)*
 
 This toy has three invented dimensions (`[security, networking, finance]`) so you can see the mechanics with no API. Save as `toy_vector_db.py`:
 
@@ -440,7 +443,7 @@ Run it: `python toy_vector_db.py`.
 
 ---
 
-## Part 7 — RAG vs a normal chatbot
+## Part 8 — RAG vs a normal chatbot
 
 **A normal chatbot** answers from what the model learned in training plus the current conversation. It does not know your private documents, and it may not know anything after its cutoff.
 
@@ -468,7 +471,7 @@ flowchart LR
 
 **RAG is not a cure-all.** If retrieval returns the wrong chunk, the answer will be confidently wrong. Retrieval quality (chunking, embeddings, keyword + vector, reranking) is most of the work, and it is what Session 5 teaches.
 
-### 🟢 Lab 7.1 — Chatbot vs RAG, side by side *(15 min)*
+### 🟢 Lab 8.1 — Chatbot vs RAG, side by side *(15 min)*
 
 **Step 1 — Normal chatbot.** In a fresh conversation:
 
@@ -501,7 +504,7 @@ Who is the account manager for this contract?
 
 ---
 
-## Part 8 — How enterprises use GenAI and AI/ML in real time
+## Part 9 — How enterprises use GenAI and AI/ML in real time
 
 **Two families, often combined:**
 
@@ -541,7 +544,7 @@ Session 9 walks through real, named company deployments with sources; use those 
 
 **What separates a demo from production:** observability (what did it do and why?), guardrails (what is it allowed to do?), evaluation (is it still correct after a change?), cost control, and governance. These are Sessions 8–10.
 
-### 🟢 Lab 8.1 — Map one workflow *(15 min, pairs)*
+### 🟢 Lab 9.1 — Map one workflow *(15 min, pairs)*
 
 Pick one real task from your own work (or use: "triage incoming IT tickets"). Fill in:
 
@@ -558,11 +561,11 @@ Share one answer with the room. You will revisit this map at the end of the cour
 
 ---
 
-## Part 9 — Modern GenAI concepts you will hear everywhere *(30 min)*
+## Part 10 — Modern GenAI concepts you will hear everywhere *(30 min)*
 
 The first eight parts explain how an LLM answers a question. Real systems in 2026 go further: they reason, call tools, act in loops, and are tested continuously. This part gives you the vocabulary. Each idea is built out in later sessions.
 
-### 9.1 Prompting → context engineering
+### 10.1 Prompting → context engineering
 
 A prompt is the instruction. **Context engineering** is designing everything the model sees: instructions, retrieved documents (RAG), conversation history, memory, tool results, and examples. Most "the AI got it wrong" problems turn out to be context problems: the right information was missing, buried, or contradictory.
 
@@ -578,15 +581,15 @@ flowchart LR
 
 **Rule of thumb:** more context is not better context. Relevant, well-ordered, and trimmed beats large and noisy.
 
-### 9.2 Reasoning models and extended thinking
+### 10.2 Reasoning models and extended thinking
 
 Some models can spend extra computation "thinking" through a problem step by step before answering. This helps with math, code, planning, and multi-step analysis, at the cost of more tokens and more time. Use it for hard problems, not for simple lookups.
 
-### 9.3 Tool use (function calling)
+### 10.3 Tool use (function calling)
 
 On its own, a model only produces text. With **tool use**, the model can ask your application to run a function (look up a ticket, query a database, call an API) and then use the result in its answer. Important: **the model requests; your code executes.** That is where you place permissions and checks.
 
-### 9.4 MCP (Model Context Protocol)
+### 10.4 MCP (Model Context Protocol)
 
 Without a standard, every AI app needs custom code for every tool. **MCP** is an open standard for exposing tools and data to AI applications through one common interface, like USB-C for AI integrations.
 
@@ -608,7 +611,7 @@ flowchart LR
 
 MCP does not replace RAG, APIs, or agents; it standardizes how they connect. Covered in Session 6.
 
-### 9.5 Agents and the agentic loop
+### 10.5 Agents and the agentic loop
 
 A **workflow** follows steps you defined. An **agent** decides its own next step inside a loop until the goal is met.
 
@@ -624,15 +627,15 @@ flowchart LR
 
 Prefer the simplest design that works: a single prompt, then a workflow, then an agent. More autonomy means more risk, cost, and monitoring effort. Covered in Sessions 7 and 8.
 
-### 9.6 Multimodal models
+### 10.6 Multimodal models
 
 Modern models accept more than text: images, screenshots, PDFs, charts, and sometimes audio. IT examples: read an error screenshot, extract fields from a scanned invoice, interpret an architecture diagram.
 
-### 9.7 Structured outputs
+### 10.7 Structured outputs
 
 Applications need predictable formats. Ask the model for JSON that matches a schema so downstream code can rely on it, then validate it anyway.
 
-### 9.8 Prompting vs RAG vs fine-tuning: how to choose
+### 10.8 Prompting vs RAG vs fine-tuning: how to choose
 
 ```mermaid
 flowchart TD
@@ -676,11 +679,11 @@ Q3: Does the task require decisions, actions, or multi-step reasoning?
 ## Enterprise Companies started to use Hybrid architecture:
 ![The LLM vs RAG vs Finetunning Hybrid Architecture: documents are chunked and indexed once offline into vector and lexical indexes, then every query searches both, fuses results with RRF, and generates a grounded answer](images/LLM+RAG-FineTunning-v1.png)
 
-### 9.9 Evaluation, not vibes
+### 10.9 Evaluation, not vibes
 
 "It looked good in my demo" is not evidence. An **evaluation (eval)** is a fixed set of test questions with expected answers or scoring rules that you re-run whenever you change the prompt, model, or data. Without evals you cannot tell whether a change helped or broke something. Covered in Session 3.
 
-### 9.10 Safety and security: the new risks
+### 10.10 Safety and security: the new risks
 
 | Risk | What it means | Basic defense |
 | --- | --- | --- |
@@ -690,11 +693,11 @@ Q3: Does the task require decisions, actions, or multi-step reasoning?
 | Excessive agency | An agent with too many permissions takes a harmful action | Least privilege, human checkpoints |
 | Bias and fairness | Outputs that systematically disadvantage groups | Testing across groups, human oversight for high-stakes decisions |
 
-### 9.11 Caching and cost
+### 10.11 Caching and cost
 
 Long, repeated context (a big policy document, a long system prompt) can be cached so you do not pay full price and latency each time. Pair this with the token knowledge from Part 3. Covered in Session 4.
 
-### 🟢 Lab 9.1 — Spot the right concept *(10 min)*
+### 🟢 Lab 10.1 — Spot the right concept *(10 min)*
 
 Match each scenario to the concept (context engineering, reasoning, tool use, MCP, agent, RAG, eval, prompt injection). One scenario may use several.
 
@@ -705,7 +708,7 @@ Match each scenario to the concept (context engineering, reasoning, tool use, MC
 5. A model works through a hard capacity-planning problem step by step before answering.
 6. A system keeps choosing its own next action until a ticket is resolved.
 
-### 🟢 Lab 9.2 — Context audit *(10 min)*
+### 🟢 Lab 10.2 — Context audit *(10 min)*
 
 Paste into Claude:
 
@@ -724,7 +727,7 @@ User question: "Can contractors use the VPN?"
 ---
 
 
-## Part 10 — How this foundation maps to the rest of the course
+## Part 11 — How this foundation maps to the rest of the course
 
 | Concept from today | Where you build or use it |
 | --- | --- |
