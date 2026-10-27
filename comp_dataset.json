@@ -1,17 +1,17 @@
 [
   {
-    "task": "Parse an AWS CloudWatch Logs Insights query result and extract all unique log levels (ERROR, WARN, INFO, DEBUG) from the logs",
+    "task": "Parse an AWS CloudWatch log entry and extract the timestamp, log level, and message using a regular expression",
     "format": "regex",
-    "solution_criteria": "The regex should correctly identify and match log level patterns commonly found in AWS CloudWatch logs, handling variations like lowercase and uppercase, and should not produce false positives"
+    "solution_criteria": "The regex should correctly capture timestamp in ISO 8601 format, log level (INFO, ERROR, WARN, DEBUG), and the remaining message text from a standard CloudWatch log line"
   },
   {
-    "task": "Create a Python function that validates an AWS S3 bucket name according to AWS naming rules (3-63 characters, lowercase, no underscores, starts with letter or number)",
+    "task": "Create a Python function that takes an AWS S3 bucket name and key, then returns a formatted S3 URI (s3://bucket/key)",
     "format": "python",
-    "solution_criteria": "The function should return True for valid bucket names and False for invalid ones, correctly enforcing all S3 naming constraints"
+    "solution_criteria": "The function should accept bucket name and key as parameters, handle edge cases like trailing slashes, and return a properly formatted S3 URI string"
   },
   {
-    "task": "Generate a JSON configuration object for an AWS Lambda function that includes environment variables, VPC settings, and memory allocation with reasonable defaults",
+    "task": "Generate a JSON policy document for an AWS IAM role that allows read-only access to a specific S3 bucket",
     "format": "json",
-    "solution_criteria": "The JSON should be valid, include all necessary AWS Lambda configuration fields, have realistic values, and be properly formatted for AWS API consumption"
+    "solution_criteria": "The JSON should be a valid IAM policy with proper structure including Effect, Action, Resource fields, allowing s3:GetObject and s3:ListBucket permissions for a specified bucket ARN"
   }
 ]

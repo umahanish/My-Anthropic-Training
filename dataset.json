@@ -1,14 +1,14 @@
 [
   {
-    "task": "Extract the AWS region from an S3 bucket ARN like 'arn:aws:s3:::my-bucket-us-east-1'",
+    "task": "Parse an AWS S3 bucket name from an S3 URI like 's3://my-bucket-name/path/to/file.txt'",
     "format": "regex"
   },
   {
-    "task": "Create a Python function that takes an EC2 instance ID and returns a formatted CloudWatch Logs query string for that instance",
-    "format": "python"
+    "task": "Create a CloudFormation template JSON object that defines an S3 bucket with versioning enabled",
+    "format": "json"
   },
   {
-    "task": "Generate a JSON IAM policy document that allows read-only access to a specific S3 bucket",
-    "format": "json"
+    "task": "Write a Python function that validates if an AWS IAM user name follows AWS naming conventions (3-64 characters, alphanumeric and allowed special characters)",
+    "format": "python"
   }
 ]

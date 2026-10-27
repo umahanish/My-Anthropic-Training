@@ -1,14 +1,14 @@
 [
   {
-    "task": "Parse an AWS S3 bucket name and object key from an S3 URI like 's3://my-bucket/path/to/file.txt'",
+    "task": "Parse an AWS S3 bucket name from a full S3 URI (e.g., 's3://my-bucket/path/to/file.txt') and extract just the bucket name",
     "format": "regex"
   },
   {
-    "task": "Create a JSON CloudFormation template snippet for an AWS Lambda function with basic execution role",
+    "task": "Create a JSON CloudFormation template snippet that defines an AWS Lambda function with basic configuration including function name, runtime, and IAM role ARN",
     "format": "json"
   },
   {
-    "task": "Write a Python function that validates if an AWS IAM username follows the naming convention (alphanumeric, hyphens, underscores, 1-64 characters)",
+    "task": "Write a Python function that takes an AWS EC2 instance ID string and returns True if it matches the valid AWS instance ID format (i-followed by 17 alphanumeric characters)",
     "format": "python"
   }
 ]
