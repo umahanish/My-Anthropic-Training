@@ -1,0 +1,18 @@
+{
+  "name": "mcp-2.0",
+  "version": "1.0.0",
+  "description": "\"MCP 2.0\" is the informal name for the **2026-07-28 MCP spec** together with the **2.x SDKs** released with it (Python `mcp==2.x`, the C# v2.0 SDK). It moves MCP from a stateful, session-based protocol to a **stateless request/response** one.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
+    "@utcp/code-mode": "^1.2.13",
+    "@utcp/mcp": "^1.2.0"
+  }
+}

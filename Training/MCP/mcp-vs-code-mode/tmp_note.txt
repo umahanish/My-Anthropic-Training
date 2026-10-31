@@ -1,0 +1,1 @@
+Install issue is due to missing native build toolchain for isolated-vm on Node 26. Use Node 22 LTS and install Desktop development with C++ + Windows SDK in VS 2022.

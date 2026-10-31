@@ -1,0 +1,166 @@
+<title>MCP vs Code Mode Flows</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600&display=swap">
+<style>
+/* Layout: one reading column; two flows stacked, each = diagram + "what to notice" notes, then the measured comparison */
+:root {
+  --bg: #f6f7f9; --panel: #ffffff; --fg: #1b1f27; --muted: #5b6372; --line: #dfe3ea;
+  --old: #b4561f; --new: #1f6f6b; --code-bg: #eef1f5;
+  --display: "Fraunces", Georgia, serif; --body: "IBM Plex Sans", system-ui, sans-serif; --mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12151b; --panel: #1a1f27; --fg: #e6e9ef; --muted: #9aa3b2; --line: #2c333f;
+  --old: #e08a55; --new: #5cc0b8; --code-bg: #222935; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12151b; --panel: #1a1f27; --fg: #e6e9ef; --muted: #9aa3b2; --line: #2c333f;
+  --old: #e08a55; --new: #5cc0b8; --code-bg: #222935; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 64px; }
+main { max-width: 980px; margin: 0 auto; display: grid; gap: 40px; }
+h1, h2 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.2; }
+h1 { font-size: 2rem; }
+h2 { font-size: 1.45rem; }
+.lede { color: var(--muted); max-width: 65ch; margin: 8px 0 0; }
+code, pre { font-family: var(--mono); font-size: 0.86em; }
+code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+.tag { font: 500 0.72rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+section { display: grid; gap: 16px; }
+.head { display: grid; gap: 6px; padding-left: 14px; border-left: 4px solid var(--c); }
+.head .tag { color: var(--c); }
+.old { --c: var(--old); } .new { --c: var(--new); }
+.diagram { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px; overflow-x: auto; }
+.diagram pre.mermaid { margin: 0; background: none; min-width: 640px; }
+.snippet { background: var(--code-bg); border-radius: 6px; padding: 12px 14px; overflow-x: auto; margin: 0; line-height: 1.5; }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.note { min-width: 0; padding: 12px 14px; border-top: 2px solid var(--c); background: var(--panel); }
+.note b { display: block; margin-bottom: 2px; }
+.note p { margin: 0; color: var(--muted); font-size: 0.92rem; }
+table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+.tablewrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; min-width: 150px; }
+th { font: 500 0.72rem/1.2 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+th.o { color: var(--old); } th.n { color: var(--new); }
+tr:last-child td { border-bottom: 0; }
+td.num { font-variant-numeric: tabular-nums; font-family: var(--mono); }
+td.win { color: var(--new); font-weight: 600; }
+.foot { color: var(--muted); font-size: 0.88rem; margin: 0; }
+</style>
+
+<main>
+  <header>
+    <span class="tag">Same MCP server · same Claude model · same task</span>
+    <h1>Classic MCP vs Code Mode</h1>
+    <p class="lede">The task: check the weather in all 8 office cities, pick the warmest one that isn't rainy or stormy, and book a flight there. Both flows below trace the real demo runs.</p>
+  </header>
+
+  <section class="old">
+    <div class="head">
+      <span class="tag">Flow 1 · Classic MCP · tool-by-tool</span>
+      <h2>Every tool result passes through the model</h2>
+    </div>
+    <div class="diagram"><pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant A as Agent (MCP client)
+    participant C as Claude
+    participant S as MCP server
+    A->>S: tools/list
+    S-->>A: list_offices, get_weather, book_flight
+    U->>A: Task
+    A->>C: Task + all 3 tool definitions
+    C-->>A: tool_use list_offices
+    A->>S: tools/call list_offices
+    S-->>A: 8 cities
+    A->>C: tool_result (8 cities)
+    C-->>A: 8 × tool_use get_weather
+    loop 8 cities
+        A->>S: tools/call get_weather(city)
+        S-->>A: current + 24-hour forecast (~1.3 KB)
+    end
+    A->>C: 8 tool_results (~10 KB of forecasts in context)
+    C-->>A: tool_use book_flight(Dubai)
+    A->>S: tools/call book_flight
+    S-->>A: PNR-DUB42
+    A->>C: tool_result
+    C-->>U: Booked Dubai, PNR-DUB42
+    </pre></div>
+    <div class="notes">
+      <div class="note"><b>Every definition up front</b><p>Claude gets all tool schemas. With dozens of MCP servers, that alone fills the context.</p></div>
+      <div class="note"><b>Every byte through the model</b><p>All 8 full forecasts land in Claude's context, even though it needs only the temperature and condition.</p></div>
+      <div class="note"><b>The model is the loop</b><p>Each step means another model turn that re-reads the growing conversation.</p></div>
+    </div>
+  </section>
+
+  <section class="new">
+    <div class="head">
+      <span class="tag">Flow 2 · Code Mode (UTCP) · code over tools</span>
+      <h2>Claude writes code; the sandbox calls MCP</h2>
+    </div>
+    <div class="diagram"><pre class="mermaid">
+sequenceDiagram
+    autonumber
+    participant U as User
+    participant A as Agent
+    participant C as Claude
+    participant X as Code Mode sandbox
+    participant S as MCP server
+    A->>S: registerManual: discover tools
+    S-->>A: 3 tools, converted to TypeScript interfaces
+    U->>A: Task
+    A->>C: Task + 1 tool (call_tool_chain) + TS interfaces
+    C-->>A: call_tool_chain(TypeScript code)
+    A->>X: run the code
+    X->>S: list_offices
+    loop 8 cities, inside the sandbox
+        X->>S: get_weather(city)
+        S-->>X: ~1.3 KB forecast, kept in the sandbox
+    end
+    Note over X: Code keeps only city, temp, condition
+    X-->>A: small summary (8 rows)
+    A->>C: tool_result (summary only)
+    C-->>A: call_tool_chain(book_flight Dubai)
+    A->>X: run the code
+    X->>S: book_flight
+    S-->>X: PNR-DUB42
+    X-->>A: result
+    A->>C: tool_result
+    C-->>U: Booked Dubai, PNR-DUB42
+    </pre></div>
+    <pre class="snippet"># Python Code Mode: the code Claude actually wrote, the whole task in one run
+offices = travel.list_offices()["offices"]
+res = []
+for c in offices:
+    w = travel.get_weather(city=c)
+    res.append((c, w["temp_c"], w["condition"]))
+ok = [r for r in res if not any(k in r[2].lower() for k in ["rain","storm","thunder"])]
+best = max(ok, key=lambda r: r[1])
+b = travel.book_flight(destination=best[0], date="2026-11-20")
+return {"all": res, "best": best, "booking": b}</pre>
+    <div class="notes">
+      <div class="note"><b>One tool</b><p>Claude sees only <code>call_tool_chain</code>, plus TypeScript interfaces generated from the MCP tools.</p></div>
+      <div class="note"><b>Data stays in the sandbox</b><p>The loop, the fetches, and the filtering run in code, and only 8 short rows go back to Claude.</p></div>
+      <div class="note"><b>MCP is unchanged</b><p>Code Mode is an MCP client. The same <code>travel_server.py</code> serves both flows.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="head" style="--c: var(--muted)">
+      <span class="tag">Measured · one run each</span>
+      <h2>What the demo runs showed</h2>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th></th><th class="o">Classic MCP</th><th class="n">Code Mode · TypeScript</th><th class="n">Code Mode · Python</th></tr></thead>
+      <tbody>
+        <tr><td>Tools the model sees</td><td>3 definitions</td><td>1 tool + TS interfaces</td><td>1 tool + TypedDicts</td></tr>
+        <tr><td>LLM calls</td><td class="num">4</td><td class="num win">3</td><td class="num win">2</td></tr>
+        <tr><td>MCP tool calls</td><td class="num">10</td><td class="num">10</td><td class="num">10</td></tr>
+        <tr><td>Input tokens</td><td class="num">16,724</td><td class="num win">6,709 (−60%)</td><td class="num win">4,268 (−74%)</td></tr>
+        <tr><td>Output tokens</td><td class="num">786</td><td class="num win">522</td><td class="num win">531</td></tr>
+        <tr><td>Wall time</td><td class="num">9.2 s</td><td class="num win">6.3 s</td><td class="num win">5.7 s</td></tr>
+        <tr><td>Answer</td><td>Dubai, PNR-DUB42</td><td>Dubai, PNR-DUB42</td><td>Dubai, PNR-DUB42</td></tr>
+      </tbody>
+    </table></div>
+    <p class="foot">Model: claude-sonnet-5-5. Single runs, so expect different numbers on a rerun. In either language, Claude sometimes books inside the same code run (2 calls) and sometimes in a second step (3 calls). The trade-off: Code Mode needs a code sandbox, and the model has to write correct code. The Python package needed 4 compatibility fixes; see the README.</p>
+  </section>
+</main>
