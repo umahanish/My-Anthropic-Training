@@ -55,7 +55,10 @@ async def summarize_contract_risk(vendor_name: str, ctx: Context) -> str:
         system_prompt="You are a concise contract risk analyst.",
     )
     return result.text
-
+@mcp.resource("contract://{vendor_name}")
+def get_contract_resource(vendor_name: str) -> dict:
+    """Expose a contract's raw data as a resource."""
+    return CONTRACTS.get(vendor_name.lower(), {"error": "No record found for that vendor."})
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http")
