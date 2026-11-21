@@ -1,7 +1,7 @@
 # Agentic Systems & Workflow Architecture — Student Lab Guide
 ### Module 8: Design Patterns for Production Agents
 
-This module is grounded directly in Anthropic's own "Building Effective Agents" engineering post (Dec 2024) and its current successor, Claude Managed Agents (April 2026). Same setup as Module 4 — Console account, `ANTHROPIC_API_KEY`, `pip install anthropic`.
+This module is grounded directly in Anthropic's own "Building Effective Agents" engineering post (Dec 2024) and its current successor, Claude Managed Agents (April 2026). Same setup as Module 4 — Console account and `ANTHROPIC_API_KEY`; the Python demos below use `pip install anthropic python-dotenv`. They read the key from the process environment or the repository-root `.env` file and stop with a clear error if it is missing.
 
 **Legend:** 🟢 Core (Workbench, minimal code) · 🔵 Stretch (real orchestration code)
 
@@ -30,9 +30,21 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
 ### 🔵 Lab 1.2 (Stretch) — A Loop That Actually Inspects Its Environment *(15 min)*
 1. Save as `agent_loop_demo.py` — this extends Module 4's `tool_loop.py` pattern with a *second* real tool so Claude has to decide which one it needs:
    ```python
+   import os
+   from pathlib import Path
+
+   from dotenv import dotenv_values
    from anthropic import Anthropic
 
-   client = Anthropic()
+   api_key = os.getenv("ANTHROPIC_API_KEY") or dotenv_values(
+       Path(__file__).resolve().parents[2] / ".env"
+   ).get("ANTHROPIC_API_KEY")
+   if not api_key:
+       raise RuntimeError(
+           "ANTHROPIC_API_KEY is missing. Set it in the environment or the repository .env file."
+       )
+
+   client = Anthropic(api_key=api_key)
 
    CONTRACTS = {
        "nimbus cloud services": {"end_date": "2026-09-25", "auto_renews": True, "notice_days": 30},
@@ -69,7 +81,7 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
                results.append({"type": "tool_result", "tool_use_id": block.id, "content": result})
        messages.append({"role": "user", "content": results})
    ```
-2. Run it: `python agent_loop_demo.py`. Watch the printed `[environment inspected: ...]` lines — this question genuinely needs *two* pieces of ground truth (today's date AND the contract data) before Claude can answer, and the loop keeps going until it has both.
+2. Run it from this directory: `python .\agent_loop_demo.py`. Watch the printed `[environment inspected: ...]` lines as Claude requests the contract data and today's scenario date. The loop returns each tool result to Claude and continues until Claude stops requesting tools.
 
 ---
 
@@ -84,27 +96,49 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
 2. Identify which step, if it silently failed, would be hardest to catch without the gate.
 
 ### 🔵 Lab 2.2 (Stretch) — Voting in Code *(15 min)*
-1. Save as `voting_demo.py` — 3 independent calls reviewing the same contract-review Skill output for accuracy, majority vote on whether it's correct:
+1. Save as `voting_demo.py` — make 3 independent calls to check the same contract-status claim, then use a majority vote:
    ```python
+   import os
+   from pathlib import Path
    from anthropic import Anthropic
    from collections import Counter
+   from dotenv import dotenv_values
 
-   client = Anthropic()
+   api_key = os.getenv("ANTHROPIC_API_KEY") or dotenv_values(
+       Path(__file__).resolve().parents[2] / ".env"
+   ).get("ANTHROPIC_API_KEY")
+   if not api_key:
+       raise RuntimeError(
+           "ANTHROPIC_API_KEY is missing. Set it in the environment or the repository .env file."
+       )
+
+   client = Anthropic(api_key=api_key)
 
    claim = "Nimbus Cloud Services (ends Sept 25, 2026, 30-day notice) is 🟡 Monitor as of August 1, 2026."
 
    def vote():
        response = client.messages.create(
            model="claude-sonnet-5", max_tokens=100,
-           messages=[{"role": "user", "content": f"Assume today is August 1, 2026. Is this claim's date math correct? Answer only CORRECT or INCORRECT.\n\n{claim}"}],
+           thinking={"type": "disabled"},
+           messages=[{"role": "user", "content": f"Evaluate this claim as of August 1, 2026 (not today's date). The cancellation deadline is 30 calendar days before the contract end date. Is the claim's status correct for that date? Answer only CORRECT or INCORRECT.\n\n{claim}"}],
        )
-       return next(b.text for b in response.content if b.type == "text").strip()
+       text = next(
+           (block.text.strip() for block in response.content if block.type == "text"),
+           None,
+       )
+       if not text:
+           block_types = [block.type for block in response.content]
+           raise RuntimeError(
+               "Anthropic returned no text for a vote "
+               f"(stop_reason={response.stop_reason!r}, content_types={block_types})."
+           )
+       return text
 
    votes = [vote() for _ in range(3)]
    print("Votes:", votes)
    print("Majority:", Counter(votes).most_common(1)[0][0])
    ```
-2. Run it: `python voting_demo.py`. Even on a simple factual check, notice whether all 3 votes agree — if they don't, that disagreement is itself useful signal about how borderline the claim is.
+2. Run it from this directory: `python .\voting_demo.py`. The cancellation deadline is August 26, 2026 (30 calendar days before September 25), so it had not passed as of August 1; the claim's `Monitor` status is correct for that date. Compare the three votes and their majority. If the model returns no text, the script reports the response stop reason and content block types instead of failing with an opaque `StopIteration`.
 
 ---
 
