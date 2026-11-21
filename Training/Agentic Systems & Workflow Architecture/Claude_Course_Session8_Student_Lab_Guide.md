@@ -151,9 +151,34 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
 ### 🔵 Lab 3.1 — Build a Cost-Aware Router *(18 min)*
 1. Save as `router_demo.py`:
    ```python
+   import os
+   from pathlib import Path
+
+   from dotenv import dotenv_values
    from anthropic import Anthropic
 
-   client = Anthropic()
+   api_key = os.getenv("ANTHROPIC_API_KEY") or dotenv_values(
+       Path(__file__).resolve().parents[2] / ".env"
+   ).get("ANTHROPIC_API_KEY")
+   if not api_key:
+       raise RuntimeError(
+           "ANTHROPIC_API_KEY is missing. Set it in the environment or the repository .env file."
+       )
+
+   client = Anthropic(api_key=api_key)
+
+   def response_text(response) -> str:
+       text = next(
+           (block.text.strip() for block in response.content if block.type == "text"),
+           None,
+       )
+       if not text:
+           block_types = [block.type for block in response.content]
+           raise RuntimeError(
+               "Anthropic returned no text "
+               f"(stop_reason={response.stop_reason!r}, content_types={block_types})."
+           )
+       return text
 
    def classify(question: str) -> str:
        response = client.messages.create(
@@ -163,20 +188,20 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
                f"(needs multi-step reasoning). Answer with one word.\n\n{question}"
            )}],
        )
-       return next(b.text for b in response.content if b.type == "text").strip()
+       return response_text(response)
 
-   def route(question: str):
+   def route(question: str) -> str:
        category = classify(question)
        is_simple = "SIMPLE" in category.upper()  # robust to punctuation like "SIMPLE."
        model = "claude-haiku-4-5-20251001" if is_simple else "claude-sonnet-5"
        print(f"[{category} -> routed to {model}]")
        response = client.messages.create(model=model, max_tokens=300, messages=[{"role": "user", "content": question}])
-       return next(b.text for b in response.content if b.type == "text")
+       return response_text(response)
 
    print(route("What's the annual value of the Nimbus Cloud Services contract?"))
    print(route("Given all 5 course contracts, which combination of cancellations would save the most money this year while keeping at least one security-related vendor active?"))
    ```
-2. Run it: `python router_demo.py`. Confirm the simple lookup routed to Haiku and the multi-constraint question routed to Sonnet — that's the cost/capability tradeoff working automatically instead of you manually picking a model every time.
+2. Run it from this directory: `python .\router_demo.py`. Confirm the simple lookup routed to Haiku and the multi-constraint question routed to Sonnet — that's the cost/capability tradeoff working automatically instead of you manually picking a model every time. This makes four API calls. The code examples can be syntax-checked and exercised with a mock client locally; making real API calls requires a configured key and may incur charges.
 
 ---
 
@@ -191,9 +216,34 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
 ### 🔵 Lab 4.1 — Orchestrator-Workers Over the Contract Set *(20 min)*
 1. Save as `orchestrator_demo.py`:
    ```python
+   import os
+   from pathlib import Path
+
+   from dotenv import dotenv_values
    from anthropic import Anthropic
 
-   client = Anthropic()
+   api_key = os.getenv("ANTHROPIC_API_KEY") or dotenv_values(
+       Path(__file__).resolve().parents[2] / ".env"
+   ).get("ANTHROPIC_API_KEY")
+   if not api_key:
+       raise RuntimeError(
+           "ANTHROPIC_API_KEY is missing. Set it in the environment or the repository .env file."
+       )
+
+   client = Anthropic(api_key=api_key)
+
+   def response_text(response) -> str:
+       text = next(
+           (block.text.strip() for block in response.content if block.type == "text"),
+           None,
+       )
+       if not text:
+           block_types = [block.type for block in response.content]
+           raise RuntimeError(
+               "Anthropic returned no text "
+               f"(stop_reason={response.stop_reason!r}, content_types={block_types})."
+           )
+       return text
 
    CONTRACTS = [
        "Nimbus Cloud Services, ends Sept 25 2026, auto-renews, 30-day notice.",
@@ -209,7 +259,7 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
            model="claude-sonnet-5", max_tokens=150,
            messages=[{"role": "user", "content": f"Assume today is August 1, 2026. In one sentence, state this contract's renewal risk: {contract}"}],
        )
-       return next(b.text for b in response.content if b.type == "text")
+       return response_text(response)
 
    worker_results = [worker(c) for c in CONTRACTS]
 
@@ -221,9 +271,9 @@ Topics 2–4 below are workflow patterns (you control the path). Topics 5–7 mo
            "prioritized action list:\n\n" + "\n".join(worker_results)
        )}],
    )
-   print(next(b.text for b in synthesis.content if b.type == "text"))
+   print(response_text(synthesis))
    ```
-2. Run it: `python orchestrator_demo.py`. Notice the structure: 3 independent worker calls, then one orchestrator call that never saw the raw contracts — only the workers' summaries. That's the same "keep verbose output out of the main context" principle from Module 7's subagents, implemented in raw API calls.
+2. Run it from this directory: `python .\orchestrator_demo.py`. Notice the structure: 3 independent worker calls, then one synthesis call that receives the workers' summaries. This example makes four API calls; local mock-client testing does not contact Anthropic.
 
 ---
 
@@ -242,18 +292,18 @@ The fastest path uses the same tool from Module 7:
 
 ### 🔵 Lab 5.2 (Stretch) — Create and Run One Directly *(15 min)*
 1. If you have the `ant` CLI installed, create an agent:
-   ```bash
-   AGENT_ID=$(ant beta:agents create \
-     --name "Contract Risk Assistant" \
-     --model '{id: claude-sonnet-5}' \
-     --system "You are a contract renewal risk analyst. Assume today is August 1, 2026 unless told otherwise.")
+   ```powershell
+   $AGENT_ID = ant beta:agents create `
+     --name "Contract Risk Assistant" `
+     --model '{id: claude-sonnet-5}' `
+     --system "You are a contract renewal risk analyst. Assume today is August 1, 2026 unless told otherwise."
    ```
 2. Start a session against it and give it a task referencing your course contract files:
-   ```bash
-   ant beta:agents sessions create --agent $AGENT_ID \
+   ```powershell
+   ant beta:agents sessions create --agent $AGENT_ID `
      --message "Review the 5 contract files in this directory and flag any needing action in the next 45 days."
    ```
-3. Watch the streamed events as the session runs — note that this session is **stateful and resumable**: if you disconnect and reconnect, the harness on Anthropic's side keeps going, unlike a stateless Messages API call from Module 4.
+3. Watch the streamed events as the session runs — note that this session is **stateful and resumable**: if you disconnect and reconnect, the harness on Anthropic's side keeps going, unlike a stateless Messages API call from Module 4. These commands create hosted resources and require the `ant` CLI plus service access; they are examples, not part of local mock testing. Review the CLI's current syntax and any associated costs before running them.
 
 **Debrief:** given everything you now know — raw Messages API, Agent SDK, Claude Code, Managed Agents — which would you reach for if you were building a Slack bot that answers quick questions? Which for an overnight batch job reviewing 500 contracts unattended?
 
