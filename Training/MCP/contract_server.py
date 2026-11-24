@@ -1,4 +1,12 @@
-from fastmcp import Context, FastMCP
+import os
+
+try:
+    from fastmcp import Context, FastMCP
+except ModuleNotFoundError as exc:
+    raise SystemExit(
+        "fastmcp is not installed in this environment. "
+        "Run: .\\.venv\\Scripts\\python.exe -m pip install fastmcp"
+    ) from exc
 
 mcp = FastMCP("Contract Server")
 
@@ -16,6 +24,7 @@ CONTRACTS = {
         "annual_value": 24000,
     },
 }
+
 
 @mcp.tool()
 def check_contract_status(vendor_name: str) -> dict:
@@ -55,10 +64,8 @@ async def summarize_contract_risk(vendor_name: str, ctx: Context) -> str:
         system_prompt="You are a concise contract risk analyst.",
     )
     return result.text
-@mcp.resource("contract://{vendor_name}")
-def get_contract_resource(vendor_name: str) -> dict:
-    """Expose a contract's raw data as a resource."""
-    return CONTRACTS.get(vendor_name.lower(), {"error": "No record found for that vendor."})
+
 
 if __name__ == "__main__":
-    mcp.run(transport="streamable-http")
+    port = int(os.getenv("MCP_PORT", "8000"))
+    mcp.run(transport="streamable-http", host="127.0.0.1", port=port)
