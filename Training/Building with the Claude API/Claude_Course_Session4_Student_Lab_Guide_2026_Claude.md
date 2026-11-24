@@ -212,17 +212,20 @@ This picks up exactly where Lab 4.1 stopped — Claude requesting the tool call 
 ## 5. Advanced Tool Patterns: Multiple Tools & Fine-Grained Control
 
 **Basic theory:**
-- `tool_choice` controls how much freedom Claude has: `{"type": "auto"}` (default, Claude decides), `{"type": "any"}` (must use *some* tool), `{"type": "tool", "name": "..."}` (must use *this specific* tool), `{"type": "none"}` (don't use tools this turn).
+- `tool_choice` controls how much freedom Claude has. On the Claude 5.5 models only `{"type": "auto"}` (default, Claude decides) and `{"type": "none"}` (no tools this turn) are accepted. **Forced tool use (`{"type": "any"}` or `{"type": "tool", "name": "..."}`) returns a 400 `invalid_request_error`.** Older models accepted it, so you will still see it in tutorials.
+- To get schema-valid tool input without forcing, keep `tool_choice` on `auto`, add `"strict": true` to the tool definition, and tell Claude in the system prompt when the tool applies. For a fixed JSON answer with no tool at all, use structured outputs (`output_config.format`).
 - Claude can request **multiple tools in one turn** (parallel tool calls) — your response needs a `tool_result` for every `tool_use` block it sent, not just the first one.
 - Tools fall into two buckets: **client tools** (yours — you write the code and execute it) and **server tools** (Anthropic's, like web search — they run automatically, no `tool_result` needed from you).
 
-### 🟢 Lab 5.1 — Force a Specific Tool *(10 min)*
-1. In the Workbench, with the `check_contract_status` tool still defined, set `tool_choice` to force that exact tool (via the Code view, since Form view may not expose this — add `"tool_choice": {"type": "tool", "name": "check_contract_status"}` to the request body).
-2. Ask something unrelated: `What's the weather like today?`
-3. Notice Claude is forced to call the tool anyway, awkwardly guessing a `vendor_name` — this is what over-forcing tool use looks like, and why `auto` is the sensible default for anything except narrow, single-purpose requests.
+### 🟢 Lab 5.1 — From Forced Tools to Strict Tools *(15 min)*
+*(Updated 2026: the original "force a specific tool" lab no longer runs on the 5.5 models.)*
+1. In the Workbench Code view, add `"tool_choice": {"type": "tool", "name": "check_contract_status"}` to the request and run it with `claude-sonnet-5-5`. Read the 400 error. This is the breaking change in practice: always read the "what's new" page before switching model versions.
+2. Remove `tool_choice`. Add `"strict": true` and `"additionalProperties": false` to the tool's schema, and add a system prompt: `Always call check_contract_status before answering a question about a vendor.`
+3. Ask `When does the Nimbus Cloud Services contract end?` and confirm Claude calls the tool with schema-valid input. Then ask `What's the weather like today?` and confirm it does **not** call the tool. That is the benefit of `auto`: the tool is used when it applies and ignored when it does not.
+4. 🔵 Run the same three steps in code: `python Training/Python-Labs-2026/lab04_caching_effort_strict_tools.py` (Part C). Add `--mock` to run offline.
 
 ### 🔵 Lab 5.2 (Stretch) — Two Tools, Parallel Calls *(15 min)*
-1. Extend `tool_loop.py` with a second tool and ask a question that plausibly needs both:
+1. Start from `Training/Python-Labs-2026/lab04_tool_loop.py` (the complete loop from Lab 4.2) and add a second tool and ask a question that plausibly needs both:
    ```python
    tools.append({
        "name": "get_todays_date",
@@ -399,3 +402,16 @@ Combine several of today's topics into one build: upload real data, have Claude 
    You won't see this fire on one request, but this is the exact configuration a production agent uses to avoid ever hitting the context window limit during a long tool-calling session.
 
 **Debrief:** which of today's 8 topics would you reach for first in a real project — and which one, honestly, are you still fuzzy on? Say it out loud; today's format assumed a lot of independent reading between labs, and that's worth naming if a topic didn't land.
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Lab 9.1 — Caching, Effort and Strict Tools in Code *(25 min)*
+Module 4 covered prompt caching in theory only. [`lab04_caching_effort_strict_tools.py`](../Python-Labs-2026/lab04_caching_effort_strict_tools.py) measures it.
+1. **Part A:** run it and read `cache_write` on call 1 and `cache_read` on call 2. Work out the saving per 1,000 calls with your own document size.
+2. **Part B:** compare effort `low` and `high` on the same question. Note output tokens and latency.
+3. **Part C:** watch forced `tool_choice` fail with a 400, then the strict tool succeed with `auto`.
+4. **Debrief:** which of your own workloads has a large, stable prefix worth caching?

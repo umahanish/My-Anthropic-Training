@@ -122,3 +122,19 @@ Sketch a role/group design covering:
 ---
 
 **Course debrief:** across all nine modules, you've gone from a first prompt to designing organizational governance for a few hundred people. What's the one module you'd want to revisit before rolling any of this out for real — and what's the specific gap you'd want to close first?
+
+---
+
+## 6. Hands-On: Evidence for the Decisions in This Module — Lab (2026 update)
+The workshops above are discussion-only. These two labs give the same decisions hard data.
+
+### 🔵 Lab 6.1 — Benchmark the Models Yourself *(20 min)*
+1. `python lab09_model_benchmark.py --volume 10000` ([`lab09_model_benchmark.py`](../Python-Labs-2026/lab09_model_benchmark.py), or `--mock` offline).
+2. Read accuracy, latency and monthly cost per model. Which is the cheapest model that meets a 100% accuracy bar on this task?
+3. Compare with your Workshop 1 answers. Where did the data change your mind?
+
+### 🔵 Lab 6.2 — Scan a Skill Before You Install It *(20 min)*
+1. `python lab09_skill_scanner.py samples/skills` ([`lab09_skill_scanner.py`](../Python-Labs-2026/lab09_skill_scanner.py)).
+2. Read why `productivity-booster` is rejected, finding by finding, and match each to a Workshop 4 red flag.
+3. Add a rule for a red flag the scanner misses, plus a sample that triggers it.
+4. **Debrief:** which findings would a human reviewer still need to judge, even with a clean scan?

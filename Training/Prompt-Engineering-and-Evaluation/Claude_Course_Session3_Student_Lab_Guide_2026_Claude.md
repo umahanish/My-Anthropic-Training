@@ -346,3 +346,16 @@ Before automating anything, do the grading by hand — this is what you're about
 ---
 
 *Facilitator note: Labs 4.2, 6.2, and 6.3 need a working `ANTHROPIC_API_KEY` and `pip install anthropic` confirmed before class — treat this the same as the plan-access checklist from Session 2, and verify it a day ahead, not the morning of.*
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Lab 7.1 — A Complete Eval Harness *(30 min)*
+Labs 5–6 built the pieces by hand. This lab puts them into one harness you could run in CI: [`lab03_eval_harness.py`](../Python-Labs-2026/lab03_eval_harness.py).
+1. Run it offline first: `python lab03_eval_harness.py --mock`. One case is planted wrong. Find which grader catches it.
+2. Read how the answer key is made: `contracts.expected()` computes the deadline and risk in code, so the test set can never disagree with itself.
+3. Run it live. Then weaken `SYSTEM` (delete the risk rule) and rerun. Which cases fail, and does the code grader or the model grader catch each one?
+4. **Debrief:** which fields deserve a code grader, and which only a model grader can judge?

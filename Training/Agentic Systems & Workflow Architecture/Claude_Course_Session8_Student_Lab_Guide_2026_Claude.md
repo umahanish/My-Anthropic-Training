@@ -347,3 +347,16 @@ Combine Module 5's code execution, your `contract-review` Skill, and Module 6's 
 3. Trace which extension type handled which part of the answer — the Skill likely shaped the risk classification, the MCP tool supplied the raw data, and code execution did the arithmetic.
 
 **Course debrief:** across Modules 1–8, you've gone from typing a first message into Claude to designing which of five workflow patterns fits a production task, and knowing when none of them should be used at all. What's the one architectural decision from this module you're most likely to get wrong on a real project — and what would make you catch it?
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Lab 8.1 — Parallel Orchestrator With a Gate and a Cost Report *(30 min)*
+The Lab 4.1 orchestrator runs workers one after another, and its plan is hard-coded. [`lab08_parallel_orchestrator.py`](../Python-Labs-2026/lab08_parallel_orchestrator.py) adds the missing parts.
+1. `python lab08_parallel_orchestrator.py --mock` — compare wall time with the one-by-one time.
+2. Notice the gate dropping `Imaginary Vendor Ltd` before any worker spends tokens on it.
+3. Set `MAX_CONCURRENCY = 1` and rerun. Then run live and read the token and cost line.
+4. **Debrief:** which step would you move to Opus, which to Haiku, and what would each change cost per run?

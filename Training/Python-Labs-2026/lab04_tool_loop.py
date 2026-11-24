@@ -1,6 +1,6 @@
 """Lab 4.2: complete a tool-use loop in code, with a step cap.
 
-Run: python lab04_tool_loop.py
+Run: python lab04_tool_loop.py --mock   (offline)   or   python lab04_tool_loop.py   (live)
 """
 from common import SONNET, get_client, text_of
 
@@ -59,6 +59,16 @@ def ask(client, question: str, max_steps: int = 5) -> str:
     return "Stopped: step limit reached."
 
 
+def mock_responder(kw: dict):
+    last = kw["messages"][-1]["content"]
+    if isinstance(last, list) and last and last[0].get("type") == "tool_result":
+        return "The deadline is 2026-08-26 (2026-09-25 minus 30 days), so it has not passed yet."
+    names = {m["content"][0]["name"] for m in kw["messages"] if m["role"] == "assistant"} if len(kw["messages"]) > 1 else set()
+    tool = "get_today" if "check_contract_status" in names else "check_contract_status"
+    args = {} if tool == "get_today" else {"vendor_name": "Nimbus Cloud Services"}
+    return [{"type": "tool_use", "id": f"toolu_{tool}", "name": tool, "input": args}]
+
+
 if __name__ == "__main__":
-    client = get_client()
+    client = get_client(mock_responder)
     print(ask(client, "Is the Nimbus contract's cancellation deadline already past? Show the date."))

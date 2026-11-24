@@ -161,3 +161,20 @@ Using this course's own contract-review scenario as your pilot: sketch the three
 3. **An outcome number** — the actual business metric that moved: time saved, deadlines caught that would have been missed, dollars retained by not auto-renewing a contract that should have lapsed.
 
 **Course closing debrief:** across all ten modules, which single lab or workshop would you actually walk into your own leadership's office and demo first — not the most impressive one, the one most likely to get you a "yes" to do more?
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Lab 7.1 — Trace Your Own Agent *(25 min)*
+Lab 1 traced Claude Code. Agents you build on the API need their own tracing: [`lab10_tracing.py`](../Python-Labs-2026/lab10_tracing.py).
+1. `python lab10_tracing.py --mock`, then open `traces.jsonl`. Match `trace_id` and `parent_id` to the span hierarchy diagram above.
+2. Confirm prompts are `<REDACTED>`; rerun with `LOG_PROMPTS=1` and discuss when that is acceptable.
+3. Make the lookup tool raise an error for one vendor. Find the failed span. Which field would you alert on?
+
+### 🔵 Lab 7.2 — Turn the Eval Into a CI Gate *(20 min)*
+1. `python lab10_regression_gate.py --update-baseline`, then `python lab10_regression_gate.py` ([`lab10_regression_gate.py`](../Python-Labs-2026/lab10_regression_gate.py)).
+2. Break quality on purpose (the docstring lists ways) and confirm the gate exits with code 1.
+3. Read [`ci_example.yml`](../Python-Labs-2026/ci_example.yml). What would you add before trusting it on every pull request?
