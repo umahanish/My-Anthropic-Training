@@ -1,0 +1,18 @@
+# Example GitHub Actions workflow for the Lab 10 regression gate.
+# Copy to .github/workflows/evals.yml in your own project and add ANTHROPIC_API_KEY as a repository secret.
+name: prompt-evals
+on:
+  pull_request:
+    paths: ["prompts/**", "app/**", "Training/Python-Labs-2026/**"]
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r Training/Python-Labs-2026/requirements.txt
+      - name: Eval regression gate
+        working-directory: Training/Python-Labs-2026
+        env: { ANTHROPIC_API_KEY: "${{ secrets.ANTHROPIC_API_KEY }}" }
+        run: python lab10_regression_gate.py
