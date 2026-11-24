@@ -286,3 +286,17 @@ New tool, familiar material — every lab below runs against `sample-repo-failin
 5. **Ship it:** `commit with a descriptive message and open a PR` (if your repo has a GitHub remote configured).
 
 **Debrief:** compare this to how you'd have approached the same feature on Day 1 of this course — typing a single vague prompt into a chat window. Name the specific point in this 5-step flow where that version would most likely have gone wrong.
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Project — Claude Code on a Real Python Codebase *(40 min)*
+Point Claude Code at the course's own lab code, [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md), and practise the full workflow on something larger than one file.
+1. `cd Training/Python-Labs-2026 && claude`, then `/init`. Check the generated CLAUDE.md mentions `--mock` and the 5.5 API rules from the README.
+2. In plan mode, ask: `Add a pytest suite for contracts.expected(), covering every branch of the risk rule, including a deadline that has already passed.` Review the plan before approving it.
+3. Let it implement and run `pytest -v`. Check one test by hand against the risk rule.
+4. Add a `PreToolUse` hook (Lab 6.1) that blocks edits to `contracts.py` unless the test suite exists. Confirm it fires.
+5. Ask a subagent to review the diff against the README's API rules. Did it find anything?

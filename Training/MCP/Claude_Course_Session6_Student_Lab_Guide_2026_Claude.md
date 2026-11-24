@@ -264,3 +264,16 @@ A host can run many clients at once — one per connected server — which is ex
 3. If sampling fails because the Inspector doesn't have a configured LLM to sample from, that's expected in a bare test harness — the concept to take away is the *shape* of the exchange (server asks, waits, receives, continues), which is identical whether the sampling handler is the Inspector, Claude Desktop, or a client you write yourself with a real `sampling_callback`.
 
 **Debrief:** this module was built on a protocol that changed a fundamental capability (sampling) three weeks before this class existed. What's your plan for a production MCP server you actually ship — pin your `fastmcp` version deliberately, or build without relying on sampling at all and call an LLM directly like Module 4 taught? There's a real trade-off either way, and "the protocol might change under me" is a genuinely different risk profile than anything else in this course so far.
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Lab 7.1 — Secure Your MCP Server *(25 min)*
+Production MCP servers need security controls the earlier labs skipped. Use [`lab06_mcp_security.py`](../Python-Labs-2026/lab06_mcp_security.py).
+1. `python lab06_mcp_security.py --test` and read the four results: least privilege, validation, injection flag, audit log.
+2. Open it in the Inspector: `npx @modelcontextprotocol/inspector python lab06_mcp_security.py`. Call `get_vendor_notes` with `VNG-2025-0219` and read the planted instruction inside the vendor note.
+3. Try `NCS-2025-0142; DROP TABLE` as a reference. Where is it rejected: in your code, or before it?
+4. **Debrief:** the rejected calls are missing from the audit log. Where should production logging live so it sees them too?

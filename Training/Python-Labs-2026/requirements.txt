@@ -1,0 +1,8 @@
+anthropic>=0.70
+python-dotenv
+rank-bm25
+numpy
+python-docx
+fastmcp>=2.10
+pydantic>=2
+voyageai        # optional: hybrid retrieval in lab05

@@ -273,3 +273,17 @@ That progression — chunking → embeddings → BM25 → combining them → rer
 3. Read Claude's final answer. This is the full loop from the Lab 1 reading, now actually built: Retrieve (BM25 + embeddings) → Augment (fused top chunk inserted into the prompt) → Generate (Claude's answer) — instead of you manually pasting contract text into a prompt like every earlier module.
 
 **Debrief:** for a query with heavy exact-term overlap (like Lab 4.1's "NCS-2025-0142"), would you expect the fused ranking to look different from this run — and in which direction? If you have time, rerun `hybrid_rag.py` with that query swapped in and check your prediction.
+
+---
+
+## 2026 Hands-On Extension
+
+Code for these labs lives in [`Training/Python-Labs-2026`](../Python-Labs-2026/README.md). Every lab also runs offline with `--mock`.
+
+### 🔵 Lab 6.1 — End-to-End RAG on the Real Contract Files *(35 min)*
+The earlier labs used one-line contract summaries. [`lab05_rag_end_to_end.py`](../Python-Labs-2026/lab05_rag_end_to_end.py) reads the actual `.docx` files from Session 2.
+1. `python lab05_rag_end_to_end.py --eval` — note **recall@3** and **answerable from chunk text**.
+2. Set `CONTEXT_HEADERS = False` and rerun. Retrieval still hits, but answerable drops to 0/6: the chunks no longer say which vendor they belong to. This is the failure contextual retrieval exists to fix, measured on your own data.
+3. Set `VOYAGE_API_KEY` and rerun for hybrid retrieval (BM25 + embeddings fused with RRF).
+4. `python lab05_rag_end_to_end.py --ask "Which contracts must be cancelled before September?"` — read the citations. Is every claim traceable to a chunk?
+5. Add two questions of your own to `EVAL_SET`, including one the documents cannot answer. What should the system do with it?
