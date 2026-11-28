@@ -205,21 +205,7 @@ detail it hides.
 
 Answer in one sentence each, then compare with a partner: (a) If you correct Claude in a chat, has the model been retrained? (b) Why can't Claude tell you today's exchange rate without a tool? (c) Why might a company choose RAG over training its own model?
 
-User Prompt
-      ↓
-Tokenization
-      ↓
-Embedding
-      ↓
-Transformer Layers
-      ↓
-Attention Calculations
-      ↓
-Reasoning / Context Processing
-      ↓
-Next Token Prediction
-      ↓
-Output Generation
+User Prompt --> Tokenization --> Embedding --> Transformer Layers --> Attention Calculations --> Reasoning / Context Processing --> Next Token Prediction--> Output Generation
 
 ---
 
